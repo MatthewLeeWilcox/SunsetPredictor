@@ -42,9 +42,9 @@ def get_sunset_time(latitude, longitude, date):
     return sunset
 
 
-locations = {"Bondville, IL": [40.1134, -88.3695],
-             "Desert Rock, NV": [36.621, -116.029],
-             "Fort Peck, MT": [], 
+locations = {"Bondville, IL": [40.1134, -88.3695, 'America/Chicago'],
+             "Desert Rock, NV": [36.621, -116.029, 'America/Los_Angeles'],
+             "Fort Peck, MT": [ 48.0056, -106.4483, 'America/Denver'], 
              "Goodwin Creek, MS": [],
              "Sioux Falls, SD": [],
              "State College, PA": [],
@@ -66,5 +66,3 @@ for year in range(2006, 2025, 1):
         print(date)
 
     df_sunset_times.to_csv(f'data/desert_rock/{year}.csv')
-
-
