@@ -1,1 +1,0 @@
-January 19, 2008 5:00:00 PM UTC	TSI Device "192.168.1.2" timed out after 30 seconds.

@@ -1,1 +1,0 @@
-January 2, 2008 9:00:00 AM UTC	TSI Device "192.168.1.2" not responding.

@@ -1,1 +1,0 @@
-October 6, 2014 9:00:00 AM UTC	TSI Device "192.168.241.146" not responding.
