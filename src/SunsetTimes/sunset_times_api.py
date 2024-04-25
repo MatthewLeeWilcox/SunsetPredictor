@@ -30,37 +30,44 @@ def convert_utc_to_edt(utc_time_str, timezone):
 
 def get_sunset_time(date, latitude, longitude, timezone):
     # Build the API request URL
+    # print("Begin_apiPull")
+    try:
+        url = f"https://api.sunrise-sunset.org/json?lat={latitude}&lng={longitude}&date={date}&formatted=0"
 
-    url = f"https://api.sunrise-sunset.org/json?lat={latitude}&lng={longitude}&date={date}&formatted=0"
+        # Make the API request
+        response = requests.get(url)
+        data = response.json()
 
-    # Make the API request
-    response = requests.get(url)
-    data = response.json()
+        # Extract the sunset time
+        sunset = data['results']['sunset']
+        # print(convert_utc_to_edt(sunset, timezone))
+        return convert_utc_to_edt(sunset, timezone)
+    except:
+        print("Failed")
+        return(date,"NA")
 
-    # Extract the sunset time
-    sunset = data['results']['sunset']
-
-    return (date,convert_utc_to_edt(sunset, timezone))
-
+from tqdm import tqdm
 
 location = {"Golden, CO": [39.7555, -105.2211, 'America/Denver']}
 latitude = location["Golden, CO"][0]
 longitude = location["Golden, CO"][1]
 timezone = location["Golden, CO"][2]
+
 # for year in range(2005, 2021, 1):
 #     dates = generate_dates(year)
-#     print(dates)
-    # columns = ['Date', 'Sunset Time']
-    # df_sunset_times = pd.DataFrame(columns=columns)
+#     # print(dates)
+#     columns = ['Date', 'Sunset Time']
+#     df_sunset_times = pd.DataFrame(columns=columns)
 
-#     for date in dates:
-#         sunset_time = get_sunset_time(location["Golden, CO"][0], location["Golden, CO"][1], date)
+#     for date in tqdm(dates):
+#         try:
+#             sunset_time = get_sunset_time(date,location["Golden, CO"][0], location["Golden, CO"][1],timezone )
 
-#         local_time = convert_utc_to_edt(sunset_time, location["Golden, CO"][2])
+#             # local_time = convert_utc_to_edt(sunset_time, location["Golden, CO"][2])
 
-#         date_time = {'Date': date, 'Sunset Time': local_time}
-#         df_sunset_times.loc[len(df_sunset_times)] = date_time
-#         print(date)
+#             date_time = {'Date': date, 'Sunset Time': sunset_time}
+#             df_sunset_times.loc[len(df_sunset_times)] = date_time
+#             # print(date)
 
 #     df_sunset_times.to_csv(f'data/golden_co/year_{year}.csv')
 
@@ -71,7 +78,7 @@ sunset_times = np.array([])
 from concurrent.futures import ThreadPoolExecutor
 from tqdm import tqdm
 
-# sunset_times = pd.DataFrame(columns = ['Date', 'Time'])
+sunset_times = pd.DataFrame(columns = ['Date', 'Time'])
 # 
 def set_up_threads(dates, latitude, longitude, timezone):
     sunset_times = np.array([])
@@ -82,6 +89,7 @@ def set_up_threads(dates, latitude, longitude, timezone):
             # Use executor.map to parallelize the download_file function
             # and feed the tqdm progress bar with updates
             for _ in executor.map(get_sunset_time, dates, [latitude]*len(dates), [longitude]*len(dates), [timezone]*len(dates)):
+                print(_)
                 sunset_times = np.append(sunset_times, np.array([_[0]]))
                 date_list = np.append(date_list, np.array([_[0]]))
                 pbar.update(1)
@@ -91,4 +99,4 @@ def set_up_threads(dates, latitude, longitude, timezone):
 
 if __name__ == "__main__":
     df = set_up_threads(date_list, latitude, longitude, timezone)
-    df.tocsv('sunset_times.csv')
+    df.to_csv('sunset_times.csv')

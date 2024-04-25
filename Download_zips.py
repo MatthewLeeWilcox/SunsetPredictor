@@ -31,7 +31,7 @@ def download_zip(url):
     try:
         r = requests.get(url)
         z = zipfile.ZipFile(io.BytesIO(r.content))
-        z.extractall("Zip2files")
+        z.extractall("F:/SunSetPhotos")
     except:
         print(url, "Error")
 print("Begin Scrape")
