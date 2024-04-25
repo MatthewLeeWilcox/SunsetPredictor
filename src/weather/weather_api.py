@@ -1,49 +1,29 @@
 import requests
-from datetime import datetime
 import json
 import os
 
-
+# Load API keys
 config_path = os.path.join(os.path.dirname(__file__), '..', 'configs', 'keys.json')
-
 with open(config_path, 'r') as file:
     keys = json.load(file)
 
-# API key
-api_key = keys['api_key'] 
-
-# API endpoint
+api_key = keys['weather_api_key']
 url = "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline"
 
+# Specify location and time
+location = "Golden, CO"
+specific_time = "2024-04-23T17:53:00"
 
-# Locations
-locations = ["Bondville, IL"]
-             
-# locations = ["Bondville, IL", 
-#              "Desert Rock, NV", 
-#              "Fort Peck, MT", 
-#              "Goodwin Creek, MS",
-#              "Sioux Falls, SD",
-#              "State College, PA",
-#              "Boulder, CO"]  
+# API request
+full_url = f"{url}/{location}/{specific_time}?key={api_key}&include=current"
+response = requests.get(full_url)
 
-# Set the start and end dates
-start_date = "2024-04-16"
-end_date = datetime.now().strftime("%Y-%m-%d")  # Today's date
-
-headers = {
-    "accept": "application/json"
-}
-params = {
-    "key": api_key,
-    "contentType": "json"
-}
-
-# Loop through each location and make the API request
-for location in locations:
-    full_url = f"{url}/{location}/{start_date}/{end_date}"
-    response = requests.get(full_url, headers=headers, params=params)
-    data = response.json()
-    
-    print(f"Weather data for {location}:")
-    print(data)
+if response.status_code == 200:
+    try:
+        data = response.json()
+        print(f"Weather data for {location} at {specific_time}:")
+        print(data)
+    except json.JSONDecodeError:
+        print("Failed to decode JSON from response")
+else:
+    print(f"Failed to fetch data: HTTP {response.status_code} - {response.text}")
