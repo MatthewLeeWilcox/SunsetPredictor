@@ -43,7 +43,6 @@ elements_to_store = ['datetime',
 columns = ['date', *elements_to_store]
 df_weather = pd.DataFrame(columns=columns)
 
-
 for index, row in sunset_times.iterrows():
     date = row['Date']
     time = row['Sunset Time'] 
