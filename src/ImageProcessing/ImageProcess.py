@@ -3,7 +3,7 @@ import numpy as np
 import cv2
 import os
 from tqdm import tqdm
-0
+
 def list_files_in_folder(folder_path):
     files = os.listdir(folder_path)
     return files
@@ -42,10 +42,10 @@ def correctImg(filepath):
 
     cv2.imwrite(filepath,result[top:bottom, :])
 
-filepathway = list_files_in_folder('SunSetImg')
-
+filepathway = list_files_in_folder('F:\SunsetPredictor\Data\SunSetImg')
+print(filepathway)
 for file in tqdm(filepathway):
-    filePath = "SunSetImg/" + file
+    filePath = "F:/SunsetPredictor/Data/SunSetImg/" + file
     correctImg(filePath)
 
 

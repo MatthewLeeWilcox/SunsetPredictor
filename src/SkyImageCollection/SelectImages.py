@@ -82,8 +82,8 @@ df = pd.DataFrame(columns = ['OGDate', 'TimeDif', 'imgCode'])
 print(testdates)
 error = np.array([])
 for date in tqdm(dateTimeArray):
-    destination_folder = "F:/SunsetPredictor/SunSetImg"
-    temp_cp_files = deviate_time(date,5)
+    destination_folder = "F:/SunsetPredictor/Data/SunSetImg"
+    temp_cp_files = deviate_time(date,3)
     df = pd.concat([df, temp_cp_files], ignore_index=True)
     # print(df)
     for loc in temp_cp_files['imgCode']:
