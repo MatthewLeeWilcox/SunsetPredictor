@@ -84,17 +84,18 @@ error = np.array([])
 for date in tqdm(dateTimeArray):
     destination_folder = "F:/SunsetPredictor/Data/SunSetImg"
     temp_cp_files = deviate_time(date,3)
-    df = pd.concat([df, temp_cp_files], ignore_index=True)
+    # df = pd.concat([df, temp_cp_files], ignore_index=True)
     # print(df)
-    for loc in temp_cp_files['imgCode']:
-        source_file = "F:/SunSetPhotos/" + loc
-        # print(source_file)
+    for row in temp_cp_files.itertuples():
+        source_file = "F:/SunSetPhotos/" + row[3]
+       
         try:    
             shutil.copy2(source_file, destination_folder)
+            temp_row = pd.DataFrame(data={'OGDate' : [row[1]], 'TimeDif' : [row[2]], 'imgCode' : [row[3]]})
+            df = pd.concat([df, temp_row])
         except:
-            error = np.append(error, np.array([source_file]))
+            # error = np.append(error, np.array([source_file]))
             counter += 1
-
+print(df)
 error = np.array([])
-print()
 df.to_csv('test.csv')
