@@ -28,7 +28,6 @@ dateTimeArray = np.array(list(map(lambda x: datetime.strptime(x, '%Y-%m-%d %H:%M
 
 print(dateTimeArray[0])
 
-test_time = datetime.strptime("2020-12-29 4:43:32", '%Y-%m-%d %H:%M:%S')
 
 def round_10min(datet):
     dt = datet
@@ -45,7 +44,11 @@ def round_10min(datet):
             dt = dt.replace(minute = ((minutes // 10 +1) *10), second = 0)    
     return dt
 
-dateTimeArray = np.array(list(map(lambda x: round_10min(x), dateTimeArray)))
+combineSunSetdf = pd.DataFrame({'OGSunTime' : dateTimeArray})
+roundDateArray = np.array(list(map(lambda x: round_10min(x), dateTimeArray)))
+
+combineSunSetdf['roundSunTime'] = roundDateArray
+print(combineSunSetdf)
 
 def giveImagecode(date):
     year = str(date.year)
@@ -56,46 +59,52 @@ def giveImagecode(date):
     imagecode = year+ month + day + hour + minute + "00" + ".raw.jpg"
     return imagecode
 
-def deviate_time(date, dev):
+def getDTmins(date):
+    total_minutes = date.hour *60 + date.minute + date.second/60
+    return total_minutes
+
+def deviate_time(date, ogTime, dev):
     # print("start-----")
-    df = pd.DataFrame(columns = ['OGDate', 'TimeDif', 'imgCode'])
+    df = pd.DataFrame(columns = ['ImDate', "SunTime", 'TimeDif', 'imgCode'])
     for i in range(0,dev+1):
         # print("###", i, "###")
         if i == 0:
-            new_row = np.array([date, 0+10*i, giveImagecode(date - timedelta(minutes=10*i))]) 
-            new_df = pd.DataFrame([new_row], columns= df.columns)
-            df = pd.concat([df, new_df], ignore_index=True)        
+            if ogTime < date:
+                new_row = np.array([date + timedelta(minutes=10*i), ogTime, getDTmins(date + timedelta(minutes=10*i)) - getDTmins(ogTime), giveImagecode(date - timedelta(minutes=10*i))]) 
+                new_df = pd.DataFrame([new_row], columns= df.columns)
+                df = pd.concat([df, new_df], ignore_index=True)  
         else:
-            new_row1 = np.array([date, 0+10*i, giveImagecode(date + timedelta(minutes=10*i))]) 
-            new_row2 = np.array([date, 0-10*i, giveImagecode(date - timedelta(minutes=10*i))]) 
+            new_row1 = np.array([date + timedelta(minutes=10*i), ogTime, getDTmins(date + timedelta(minutes=10*i)) - getDTmins(ogTime), giveImagecode(date + timedelta(minutes=10*i))]) 
+            new_row2 = np.array([date - timedelta(minutes=10*i), ogTime, getDTmins(date - timedelta(minutes=10*i))- getDTmins(ogTime), giveImagecode(date - timedelta(minutes=10*i))]) 
             new_df = pd.DataFrame([new_row1, new_row2], columns= df.columns)
             df = pd.concat([df, new_df], ignore_index=True)
     # print("----End----")
     return df
 
-print(deviate_time(test_time, 5))
+test_time = datetime.strptime("2020-12-29 4:46:32", '%Y-%m-%d %H:%M:%S')
+round_test_time = round_10min(test_time)
+
+# print(deviate_time(round_test_time, test_time, 5))
 testdates = dateTimeArray[0:365]
 counter = 1
 
-df = pd.DataFrame(columns = ['OGDate', 'TimeDif', 'imgCode'])
+df = pd.DataFrame(columns = ['ImDate', "SunTime", 'TimeDif', 'imgCode'])
 
-print(testdates)
+# print(testdates)
+print("Start-----")
 error = np.array([])
-for date in tqdm(dateTimeArray):
+for date in tqdm(combineSunSetdf.itertuples()):
     destination_folder = "F:/SunsetPredictor/Data/SunSetImg"
-    temp_cp_files = deviate_time(date,3)
-    # df = pd.concat([df, temp_cp_files], ignore_index=True)
-    # print(df)
+    temp_cp_files = deviate_time(date[2],date[1], 3)
     for row in temp_cp_files.itertuples():
-        source_file = "F:/SunSetPhotos/" + row[3]
-       
+        source_file = "F:/SunSetPhotos/" + row[4]
         try:    
             shutil.copy2(source_file, destination_folder)
-            temp_row = pd.DataFrame(data={'OGDate' : [row[1]], 'TimeDif' : [row[2]], 'imgCode' : [row[3]]})
+            temp_row = pd.DataFrame(data={'ImDate' : [row[1]],  "SunTime" :  [row[2]], 'TimeDif' : [row[3]], 'imgCode' : [row[4]]})
             df = pd.concat([df, temp_row])
         except:
             # error = np.append(error, np.array([source_file]))
             counter += 1
 print(df)
 error = np.array([])
-df.to_csv('test.csv')
+df.to_csv('ImageListwTimeDif.csv')
