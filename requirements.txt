@@ -4,3 +4,10 @@ pandas==2.2.2
 
 pytz~=2024.1
 numpy~=1.26.4
+torch
+torchvision
+matplotlib
+IPython
+opencv-python==4.9.0.80
+tqdm
+scikit-learn
