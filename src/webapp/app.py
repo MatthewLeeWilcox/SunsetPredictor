@@ -1,6 +1,8 @@
 import requests
 from flask import Flask, render_template, request
 
+from helpers.future_weather_api import get_future_weather
+
 
 app = Flask(__name__)
 
@@ -10,12 +12,23 @@ def home():
     return render_template("welcome.html")
 
 
-@app.route('/result', methods=['POST', 'GET'])
+@app.route('/result', methods=['POST', 'GET']) 
 def result():
-    output = request.form.to_dict()
-    date = output["date"]
+    if request.method == 'POST':
+        output = request.form.to_dict()
+        date = output["date"]
 
-    return render_template('welcome.html')
+        try:
+            df_weather = get_future_weather(date)
+
+            return render_template('result.html', data=df_weather.to_html())
+        
+        except Exception as e:
+            return str(e), 500
+        
+    else:
+
+        return render_template('welcome.html')
 
 
 if __name__ == "__main__":
