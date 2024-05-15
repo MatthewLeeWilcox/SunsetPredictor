@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: url('https://img.freepik.com/free-vector/gradient-tropical-sunset-background_23-2150683885.jpg?w=1060&t=st=1715647697~exp=1715648297~hmac=161725a1fe0b6ec68400c3da18d2f659203a4f4e7ad348c0d225829a43f57581') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .centered-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%; 
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        h1 {
+            color: rgb(92, 49, 18, 0.9);
+            font-size: 27px;
+            text-align: center;
+            margin-bottom: 20px; 
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8deb9;
+        }
+        img {
+            width: 550px; 
+            margin-top: 10px; 
+        }
+        .back-link {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8deb9;
+            color: black;
+            text-decoration: none;
+            border-radius: 5px;
+            align-self: flex-end; 
+        }
+    </style>
+    <title>Weather Results</title>
+</head>
+<body>
+    <div class="centered-content">
+        <h1>Weather Forecast</h1>
+        {% if data %}
+            <div>{{ data|safe }}</div>
+            <h1>Sunset Prediction</h1>
+            <img src="{{ url_for('static', filename='sunset.png') }}" alt="Sunset Image">
+        {% else %}
+            <p>No data available for the provided date. Please try another date.</p>
+        {% endif %}
+        <a href="/" class="back-link">Back to Home</a>
+    </div>
+</body>
+</html>
+
