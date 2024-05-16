@@ -2,7 +2,7 @@ import requests
 from flask import Flask, render_template, request
 
 from helpers.future_weather_api import get_future_weather
-
+from helpers.mock_output import genSunsetImage
 
 app = Flask(__name__)
 
@@ -17,18 +17,13 @@ def result():
     if request.method == 'POST':
         output = request.form.to_dict()
         date = output["date"]
-        if date == "05/15/2024":
-            try:
-                df_weather = get_future_weather(date)
-
-                return render_template('result.html', data=df_weather.to_html())
-            
-            except Exception as e:
-                return str(e), 500
-        else:
+        try:
             df_weather = get_future_weather(date)
-
-            return render_template('resultRickRoll.html', data=df_weather.to_html())
+            genSunsetImage(df_weather)
+            return render_template('result.html', data=df_weather.to_html())
+        
+        except Exception as e:
+            return render_template('Error.html')
 
     else:
 
